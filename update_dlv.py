@@ -4,6 +4,7 @@ Script to update the DS keys on dlv.isc.org "look asside" DNSSEC system.
 
 from BeautifulSoup import BeautifulSoup
 
+import ConfigParser
 import htmllib
 import logging
 import mechanize
@@ -14,10 +15,16 @@ import re
 import time
 import subprocess
 
+# Check the input arguments
 domain = sys.argv[1]
 assert os.path.exists(domain), "domain file not found: %s" % domain
 dsset = "dsset-%s." % domain
 assert os.path.exists(dsset), "dsset file not found: %s" % dsset
+
+# Load the configuration
+config = ConfigParser.ConfigParser()
+config.readfp(open('config.ini'))
+
 
 def unescape(s):
     p = htmllib.HTMLParser(None)
@@ -58,8 +65,8 @@ br = mechanize.Browser()
 # Login to the dlv.isc.org website
 br.open("https://dlv.isc.org/session/new")
 br.select_form(nr=1)
-br.form["session[login]"] = "XXXX"
-br.form["session[password]"] = "XXXXX"
+br.form["session[login]"]=config.get('dlv', 'username')
+br.form["session[password]"]=config.get('dlv', 'password')
 br.submit()
 
 # Go to the manage zones page
