@@ -26,4 +26,6 @@ if ds_records == tocheck:
   sys.exit(0)
 else:
   print "DS records don't match"
+  print "Published records:", ds_records
+  print "  On disk records:", tocheck
   sys.exit(1)
