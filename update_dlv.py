@@ -22,8 +22,9 @@ dsset = "dsset-%s." % domain
 assert os.path.exists(dsset), "dsset file not found: %s" % dsset
 
 # Load the configuration
+configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
 config = ConfigParser.ConfigParser()
-config.readfp(open('config.ini'))
+config.readfp(open(configfile))
 
 
 def unescape(s):
@@ -112,7 +113,7 @@ cookie = unescape(details_soup.find(attrs={"class": "screener tty"}).div.string)
 # Write the cookie into the zone file
 zonedata_in = file(domain, 'r').readlines()
 zonedata_out = []
-for line in zonedata_in:
+for line in zonedata_in.readlines():
   if not line.startswith('dlv.'):
     zonedata_out.append(line)
 

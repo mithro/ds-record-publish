@@ -26,9 +26,9 @@ dsset = "dsset-%s." % domain
 assert os.path.exists(dsset), "dsset file not found: %s" % dsset
 
 # Load the configuration
+configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
 config = ConfigParser.ConfigParser()
-config.readfp(open('config.ini'))
-
+config.readfp(open(configfile))
 
 def unescape(s):
     p = htmllib.HTMLParser(None)
