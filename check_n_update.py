@@ -17,7 +17,7 @@ root = os.path.realpath(root)
 print root
 
 # Load the configuration
-configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
+configfile = os.path.join(root, 'config.ini')
 config = ConfigParser.ConfigParser()
 config.readfp(open(configfile))
 
@@ -62,4 +62,6 @@ for domain in sorted(config.sections()):
         print color.green("   Update successful!")
     else:
       print color.green("   Everything up to date!")
+
+    time.sleep(60)
   os.chdir(curdir)
