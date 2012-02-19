@@ -60,4 +60,6 @@ for domain in sorted(config.sections()):
         print color.green("   Update successful!")
     else:
       print color.green("   Everything up to date!")
+
+    time.sleep(60)
   os.chdir(curdir)
