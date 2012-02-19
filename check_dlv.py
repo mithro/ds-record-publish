@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# vim: set ts=4 sw=4 et sts=4 ai:
+# vim: set ts=2 sw=2 et sts=2 ai:
 """
 Script to check if the DLV "look aside" register has your DS records.
 """

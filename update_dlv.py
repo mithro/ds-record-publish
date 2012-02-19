@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# vim: set ts=4 sw=4 et sts=4 ai:
+# vim: set ts=2 sw=2 et sts=2 ai:
 """
 Script to update the DS keys on dlv.isc.org "look asside" DNSSEC system.
 """
@@ -31,10 +31,10 @@ config.readfp(open(configfile))
 
 
 def unescape(s):
-    p = htmllib.HTMLParser(None)
-    p.save_bgn()
-    p.feed(s)
-    return p.save_end()
+  p = htmllib.HTMLParser(None)
+  p.save_bgn()
+  p.feed(s)
+  return p.save_end()
 
 def link_with_authtok(br, string, method, url=""):
   """Method to follow a link which has javascript authtok protection."""
@@ -107,7 +107,7 @@ while True:
 
   # Remove the old keys
   link_with_authtok(br, "(delete record)", "delete")
-    
+
 # Upload the new keys
 br.open("https://dlv.isc.org/zones/%s/dnskeys/new" % dlvid)
 
@@ -152,7 +152,7 @@ if config.get('dlv', 'reload')[0].lower() == 'y':
   # Output the log
   key_details_soup = BeautifulSoup(br.response())
   logs = key_details_soup.find(attrs={"class": "screener"}).findAll(
-        lambda tag: tag.name == 'span' and len(tag.attrs) == 0)
+      lambda tag: tag.name == 'span' and len(tag.attrs) == 0)
 
   for log in logs:
     print log.string

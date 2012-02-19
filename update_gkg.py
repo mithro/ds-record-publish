@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# vim: set ts=4 sw=4 et sts=4 ai:
+# vim: set ts=2 sw=2 et sts=2 ai:
 """
 Script to update the DS keys on dlv.isc.org "look asside" DNSSEC system.
 """
@@ -30,16 +30,16 @@ password = config.get('gkg', 'password')
 # "Save" on the Manage DS Records window
 dsrecords = []
 for line in file(dsset):
-    # thousandparsec.com.     IN DS 57841 5 2 DEA43569E59B6F2FEB99B799BCD39927769A3CA369A846122DE11595 D31A728A
-    ds_domain, in_, ds_, keytag, algorithm, digest_type, digest = line.split(None, 6)
+  # thousandparsec.com.     IN DS 57841 5 2 DEA43569E59B6F2FEB99B799BCD39927769A3CA369A846122DE11595 D31A728A
+  ds_domain, in_, ds_, keytag, algorithm, digest_type, digest = line.split(None, 6)
 
-    dsrecords.append({
-        'digest': "".join(digest.split()),
-        'digestType': digest_type,
-        'algorithm': algorithm,
-        'keyTag': keytag,
-        'maxSigLife': 3600*24*90, # FIXME(tansell): Defaulting to 90 days...
-        })
+  dsrecords.append({
+      'digest': "".join(digest.split()),
+      'digestType': digest_type,
+      'algorithm': algorithm,
+      'keyTag': keytag,
+      'maxSigLife': 3600*24*90, # FIXME(tansell): Defaulting to 90 days...
+      })
 
 mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
 mgr.add_password(
@@ -52,13 +52,13 @@ opener = urllib2.build_opener(auth_handler)
 urllib2.install_opener(opener)
 
 for dsrecord in dsrecords:
-    url = "https://www.gkg.net/ws/domain/%s/ds" % domain
-    print url
-    try:
-        r = urllib2.urlopen(url, data=simplejson.dumps(dsrecord))
-        print r.read()
-    except urllib2.HTTPError, e:
-        if e.code == 403:
-            print "DS record already existed."
-        else:
-            raise
+  url = "https://www.gkg.net/ws/domain/%s/ds" % domain
+  print url
+  try:
+    r = urllib2.urlopen(url, data=simplejson.dumps(dsrecord))
+    print r.read()
+  except urllib2.HTTPError, e:
+    if e.code == 403:
+      print "DS record already existed."
+    else:
+      raise
