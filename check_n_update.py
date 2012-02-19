@@ -15,7 +15,7 @@ if not root:
   root = os.path.realpath(".")
 
 # Load the configuration
-configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
+configfile = os.path.join(root, 'config.ini')
 config = ConfigParser.ConfigParser()
 config.readfp(open(configfile))
 
