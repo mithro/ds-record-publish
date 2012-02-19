@@ -38,20 +38,20 @@ for domain in sorted(config.sections()):
   print domain
   publish_to = config.get(domain, "publish").split(',')
   os.chdir(domain)
-  for publisher in publish_to:
-    dnskey_prog = "%s/generate_dnskey_file.py" % (root, publisher)
-    assert os.path.exists(dnskey_prog)
 
+  dnskey_prog = "%s/generate_dnskey_file.py" % (root,)
+  assert os.path.exists(dnskey_prog)
+  g = subprocess.Popen("python -u %s %s" % (dnskey_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+  for line in g.stdout.xreadlines():
+    print "   ", line.strip()
+  assert g.wait() == 0
+
+  for publisher in publish_to:
     check_prog = "%s/check_%s.py" % (root, publisher)
     if not os.path.exists(check_prog):
       check_prog = "%s/check_root.py" % (root,)
     update_prog = "%s/update_%s.py" % (root, publisher)
     assert os.path.exists(update_prog), update_prog
-
-    g = subprocess.Popen("python -u %s %s" % (dnskey_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
-    for line in g.stdout.xreadlines():
-      print "   ", line.strip()
-    assert g.wait() == 0
 
     print " Checking", publisher
     c = subprocess.Popen("python -u %s %s" % (check_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
@@ -71,5 +71,4 @@ for domain in sorted(config.sections()):
     else:
       print color.green("   Everything up to date!")
 
-    time.sleep(60)
   os.chdir(curdir)

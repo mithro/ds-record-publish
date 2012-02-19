@@ -38,6 +38,7 @@ while len(f) > 0:
     dnskey.append(f.pop(0))
 
   o.write("".join(dnskey))
+  o.write("\n")
 
 """
 FIXME: Code for generating DS records
