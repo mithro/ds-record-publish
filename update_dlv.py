@@ -21,8 +21,8 @@ import subprocess
 # Check the input arguments
 domain = sys.argv[1]
 assert os.path.exists(domain), "domain file not found: %s" % domain
-dsset = "dsset-%s." % domain
-assert os.path.exists(dsset), "dsset file not found: %s" % dsset
+dnskey = "dnskey-%s." % domain
+assert os.path.exists(dnskey), "dnskey file not found: %s" % dnskey
 
 # Load the configuration
 configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
@@ -112,7 +112,7 @@ while True:
 br.open("https://dlv.isc.org/zones/%s/dnskeys/new" % dlvid)
 
 br.select_form(nr=1)
-br.add_file(open(dsset), "text/plain", dsset)
+br.add_file(open(dnskey), "text/plain", dnskey)
 br.submit()
 
 response_soup = BeautifulSoup(br.response())
