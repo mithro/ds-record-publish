@@ -53,7 +53,6 @@ urllib2.install_opener(opener)
 
 for dsrecord in dsrecords:
   url = "https://www.gkg.net/ws/domain/%s/ds" % domain
-  print url
   try:
     r = urllib2.urlopen(url, data=simplejson.dumps(dsrecord))
     print r.read()
