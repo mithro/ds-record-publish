@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 # -*- coding: utf-8 -*-
 # vim: set ts=2 sw=2 et sts=2 ai:
 """
@@ -44,16 +44,16 @@ for domain in sorted(config.sections()):
     assert os.path.exists(check_prog)
 
     print " Checking", publisher
-    c = subprocess.Popen("%s %s" % (check_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    retcode = c.wait()
-    for line in c.stdout.readlines():
+    c = subprocess.Popen("python -u %s %s" % (check_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+    for line in c.stdout.xreadlines():
       print "   ", line.strip()
+    retcode = c.wait()
     if retcode != 0:
       print color.yellow("   Need to update!")
-      u = subprocess.Popen("%s %s" % (update_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-      retcode = u.wait()
-      for line in u.stdout.readlines():
+      u = subprocess.Popen("python -u %s %s" % (update_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+      for line in u.stdout.xreadlines():
         print "   ", line.strip()
+      retcode = u.wait()
       if retcode != 0:
         print color.red("   Update failed!")
       else:
