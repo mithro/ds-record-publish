@@ -1,0 +1,27 @@
+This is a set of tools which makes managing publishing of DS records easier.
+
+You need to create a config.ini file in this directory in the following format:
+	[dlv]
+	username=<username>
+	password=<password>
+
+	[gkg]
+	username=<username>
+	password=<password>
+
+	[domaina.me]
+	publish=dlv
+
+	[domaina.com]
+	publish=dlv,gkg
+
+You can then run the tools, they are:
+
+	check_root.py -	Check your DS records are published in the root
+			servers.
+	check_dlv.py -	Check your DS records are published in the DLV look
+			aside registary.
+
+	update_gkg.py - Update your DS records on GKG.net
+	update_dlv.py - Update your DS records in the DLV look aside registary.
+
