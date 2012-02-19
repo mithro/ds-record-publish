@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# vim: set ts=4 sw=4 et sts=4 ai:
 """
 Script to update the DS keys on dlv.isc.org "look asside" DNSSEC system.
 """
