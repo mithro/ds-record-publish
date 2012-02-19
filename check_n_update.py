@@ -12,7 +12,9 @@ import subprocess
 
 root = os.path.dirname(__file__)
 if not root:
-  root = os.path.realpath(".")
+  root = "."
+root = os.path.realpath(root)
+print root
 
 # Load the configuration
 configfile = os.path.join(os.path.dirname(__file__), 'config.ini')
@@ -41,7 +43,7 @@ for domain in sorted(config.sections()):
     if not os.path.exists(check_prog):
       check_prog = "%s/check_root.py" % (root,)
     update_prog = "%s/update_%s.py" % (root, publisher)
-    assert os.path.exists(check_prog)
+    assert os.path.exists(update_prog), update_prog
 
     print " Checking", publisher
     c = subprocess.Popen("python -u %s %s" % (check_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
