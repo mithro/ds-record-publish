@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 # -*- coding: utf-8 -*-
 # vim: set ts=2 sw=2 et sts=2 ai:
 """
