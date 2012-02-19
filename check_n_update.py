@@ -37,11 +37,19 @@ for domain in sorted(config.sections()):
   publish_to = config.get(domain, "publish").split(',')
   os.chdir(domain)
   for publisher in publish_to:
+    dnskey_prog = "%s/generate_dnskey_file.py" % (root, publisher)
+    assert os.path.exists(dnskey_prog)
+
     check_prog = "%s/check_%s.py" % (root, publisher)
     if not os.path.exists(check_prog):
       check_prog = "%s/check_root.py" % (root,)
     update_prog = "%s/update_%s.py" % (root, publisher)
     assert os.path.exists(check_prog)
+
+    g = subprocess.Popen("python -u %s %s" % (dnskey_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+    for line in g.stdout.xreadlines():
+      print "   ", line.strip()
+    assert g.wait() == 0
 
     print " Checking", publisher
     c = subprocess.Popen("python -u %s %s" % (check_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
