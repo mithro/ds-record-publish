@@ -74,38 +74,49 @@ br.form["session[password]"]=config.get('dlv', 'password')
 br.submit()
 
 # Go to the manage zones page
-response = br.follow_link(text="Manage Zones")
+while True:
+  response = br.follow_link(text="Manage Zones")
 
-# Find the row with the domain we are updating
-soup = BeautifulSoup(br.response())
-rows = soup.find("table", attrs={'class': 'zebra'}).findAll('tr')
-for row in rows[1:]:
-  cells = row.findAll('td')
+  # Find the row with the domain we are updating
+  soup = BeautifulSoup(br.response())
+  rows = soup.find("table", attrs={'class': 'zebra'}).findAll('tr')
+  for row in rows[1:]:
+    cells = row.findAll('td')
 
-  row_domain = cells[0].text
-  status = cells[1].text
-  dlvid = dict(cells[3].findAll('a')[0].attrs)['href'][7:]
+    row_domain = cells[0].text
+    status = cells[1].text
+    dlvid = dict(cells[3].findAll('a')[0].attrs)['href'][7:]
 
-  if row_domain == domain:
+    if row_domain == domain:
+      break
+
+  else:
+    assert False, "Did not find domain %s on dlv.isc.org" % domain
+
+  print domain, status, dlvid
+
+  if status == "Good":
+    print "Skipping as status was good."
+    sys.exit(1)
+
+  if status == "Unconfigured(?)":
     break
 
-else:
-  assert False, "Did not find domain %s on dlv.isc.org" % domain
+  # Go to the details page
+  key_details_page(br, dlvid)
 
-print domain, status, dlvid
-
-# Go to the details page
-key_details_page(br, dlvid)
-
-# Remove the old keys
-link_with_authtok(br, "(delete record)", "delete")
-
+  # Remove the old keys
+  link_with_authtok(br, "(delete record)", "delete")
+    
 # Upload the new keys
 br.open("https://dlv.isc.org/zones/%s/dnskeys/new" % dlvid)
 
 br.select_form(nr=1)
 br.add_file(open(dsset), "text/plain", dsset)
 br.submit()
+
+response_soup = BeautifulSoup(br.response())
+print response_soup.find(attrs={"id": "content"}).text
 
 br.follow_link(text="(back to zone information)")
 
@@ -116,7 +127,7 @@ cookie = unescape(details_soup.find(attrs={"class": "screener tty"}).div.string)
 # Write the cookie into the zone file
 zonedata_in = file(domain, 'r').readlines()
 zonedata_out = []
-for line in zonedata_in.readlines():
+for line in zonedata_in:
   if not line.startswith('dlv.'):
     zonedata_out.append(line)
 
@@ -126,21 +137,22 @@ file(domain, 'w').write("\n".join(zonedata_out))
 # Call zonesigner
 subprocess.call(['zonesigner', domain])
 
-# reload domain
-subprocess.call(['rndc', 'reload'])
+if config.get('dlv', 'reload')[0].lower() == 'y':
+  # reload domain
+  subprocess.call(['rndc', 'reload'])
 
-time.sleep(30)
+  time.sleep(30)
 
-# Go to the details page
-key_details_page(br, dlvid)
+  # Go to the details page
+  key_details_page(br, dlvid)
 
-# Poke the checker
-link_with_authtok(br, "(request re-check)", "put", "/recheck")
+  # Poke the checker
+  link_with_authtok(br, "(request re-check)", "put", "/recheck")
 
-# Output the log
-key_details_soup = BeautifulSoup(br.response())
-logs = key_details_soup.find(attrs={"class": "screener"}).findAll(
-      lambda tag: tag.name == 'span' and len(tag.attrs) == 0)
+  # Output the log
+  key_details_soup = BeautifulSoup(br.response())
+  logs = key_details_soup.find(attrs={"class": "screener"}).findAll(
+        lambda tag: tag.name == 'span' and len(tag.attrs) == 0)
 
-for log in logs:
-  print log.string
+  for log in logs:
+    print log.string
