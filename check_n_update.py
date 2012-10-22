@@ -39,7 +39,7 @@ for domain in sorted(config.sections()):
   publish_to = config.get(domain, "publish").split(',')
   os.chdir(domain)
 
-  dnskey_prog = "%s/generate_dnskey_file.py" % (root,)
+  dnskey_prog = "%s/powerdns_generate_files.py" % (root,)
   assert os.path.exists(dnskey_prog)
   g = subprocess.Popen("python -u %s %s" % (dnskey_prog, domain), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
   for line in g.stdout.xreadlines():

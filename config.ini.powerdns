@@ -1,0 +1,17 @@
+[dlv]
+username=<your username>
+password=<your password>
+reload=y
+sign-cmd=pdns_control bind-reload-now %s
+reload-cmd=pdns_control bind-reload-now %s
+notify-cmd=pdns_control notify %s
+
+[gkg]
+username=<your username>
+password=<your password>
+
+[<your domain>]
+publish=gkg,dlv
+
+[<your domain>]
+publish=gkg

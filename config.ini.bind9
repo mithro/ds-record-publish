@@ -1,0 +1,11 @@
+[dlv]
+username=<your username>
+password=<your password>
+reload=y
+sign-cmd=zonesigner %s
+reload-cmd=rdnc reload %s
+notify-cmd=rdnc notify %s
+
+[gkg]
+username=<your username>
+password=<your password>

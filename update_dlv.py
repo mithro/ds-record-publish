@@ -45,12 +45,12 @@ def link_with_authtok(br, string, method, url=""):
 
   new_forms = mechanize.ParseFile(
       StringIO.StringIO("""
-  <form action="%s" method="POST">
-  <input type=hidden name="_method" value="%s">
-  <input type=hidden name="authenticity_token" value="%s">
-  <input type="submit">
-  </form>
-  """ % (br.response().geturl()+url, method, delete_key_groups.groups()[0])),
+<form action="%s" method="POST">
+<input type=hidden name="_method" value="%s">
+<input type=hidden name="authenticity_token" value="%s">
+<input type="submit">
+</form>
+""" % (br.response().geturl()+url, method, delete_key_groups.groups()[0])),
       br.response().geturl()+url,
       backwards_compat=False,
       )
@@ -124,25 +124,55 @@ br.follow_link(text="(back to zone information)")
 details_soup = BeautifulSoup(br.response())
 cookie = unescape(details_soup.find(attrs={"class": "screener tty"}).div.string)
 
-# Write the cookie into the zone file
+# Write the cookie into the zone file, update the SOA
+soa = None
 zonedata_in = file(domain, 'r').readlines()
 zonedata_out = []
-for line in zonedata_in:
+for i, line in enumerate(zonedata_in):
+  if "SOA" in line:
+    # Figure out the spacing
+    soa_line = zonedata_in[i+1]
+    soa = soa_line.strip().split()[0]
+    print "Current serial %s" % soa
+    startpos = soa_line.find(soa)
+    endpos = startpos + len(soa)
+
+    new_soa = str(int(soa)+1)
+    print "Update serial to %s" % new_soa
+    zonedata_in[i+1] = soa_line[:startpos] + str(new_soa) + soa_line[endpos:]
   if not line.startswith('dlv.'):
     zonedata_out.append(line)
 
 zonedata_out.append(cookie)
-file(domain, 'w').write("\n".join(zonedata_out))
+file(domain, 'w').write("".join(zonedata_out))
 
 # Call zonesigner
-subprocess.call(['zonesigner', domain])
+subprocess.call(config.get('dlv', 'sign-cmd') % domain, shell=True)
+
+# Wait for the secondary to get the domain information
+def wait(domain):
+  print "Waiting for secondaries to pick up config."
+  servers = subprocess.Popen("dig @localhost %s NS +short" % domain, shell=True, stdout=subprocess.PIPE).stdout.readlines()
+  mysoa = subprocess.Popen("dig @localhost %s SOA +short" % domain, shell=True, stdout=subprocess.PIPE).stdout.read().strip()
+  print "My SOA is %s" % mysoa
+  while True:
+    for server in servers:
+       soa = subprocess.Popen("dig @%s %s SOA +short" % (server[:-1], domain), shell=True, stdout=subprocess.PIPE).stdout.read().strip()
+       if soa != mysoa:
+          print "[FAILED] Server %s has SOA %s" % (server[:-1], soa)
+          break
+       else:
+          print "[OK] Server %s has SOA %s" % (server[:-1], soa)
+    else:
+      break
+    time.sleep(5)
+    subprocess.call(config.get('dlv', 'notify-cmd') % domain, shell=True)
+  return mysoa
+
+subprocess.call(config.get('dlv', 'reload-cmd') % domain, shell=True)
+wait(domain)
 
 if config.get('dlv', 'reload')[0].lower() == 'y':
-  # reload domain
-  subprocess.call(['rndc', 'reload'])
-
-  time.sleep(30)
-
   # Go to the details page
   key_details_page(br, dlvid)
 

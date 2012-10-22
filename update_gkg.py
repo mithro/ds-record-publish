@@ -63,7 +63,7 @@ for line in file(dsset):
 
 to_add = []
 for dsrecord in sorted(current_records):
-  dsid = dsrecord['keyTag']+" "+dsrecord['algorithm']
+  dsid = dsrecord['keyTag']+" "+str(dsrecord['algorithm'])
   if dsrecord in new_records:
     print color.green("Current %s" % dsid)
   else:
@@ -77,7 +77,7 @@ for dsrecord in sorted(new_records):
   if dsrecord in current_records:
     continue
 
-  dsid = dsrecord['keyTag']+" "+dsrecord['algorithm']
+  dsid = dsrecord['keyTag']+" "+str(dsrecord['algorithm'])
   print color.yellow("Adding %s" % dsid)
   url = "https://www.gkg.net/ws/domain/%s/ds" % domain
   r = urllib2.urlopen(url, data=simplejson.dumps(dsrecord))

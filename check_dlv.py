@@ -14,7 +14,6 @@ assert os.path.exists(domain), "domain file not found: %s" % domain
 dsset = "dsset-%s." % domain
 assert os.path.exists(dsset), "dsset file not found: %s" % dsset
 
-subprocess.call(["rndc", "flushname", domain+".dlv.isc.org."])
 p = subprocess.Popen(["dig", "+short", "DLV", domain+".dlv.isc.org."], stdout=subprocess.PIPE)
 p.wait()
 

@@ -1,6 +1,7 @@
 This is a set of tools which makes managing publishing of DS records easier.
 
-You need to create a config.ini file in this directory in the following format:
+You need to create a config.ini file in this directory in the following format;
+example configurations are included.
 	[dlv]
 	username=<username>
 	password=<password>
@@ -25,3 +26,7 @@ You can then run the tools, they are:
 	update_gkg.py - Update your DS records on GKG.net
 	update_dlv.py - Update your DS records in the DLV look aside registary.
 
+	powerdns_generate_files.py - Generate dsset and dnskey files needed by
+                                     these tools from powerdns's config.
+	bind9_generate_files.py    - Generate dsset and dnskey files needed by
+                                     these tools from bind's config.
